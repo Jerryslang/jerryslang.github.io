@@ -1,7 +1,153 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta property="og:type" content="image/gif">
-    <meta http-equiv="refresh" content="0; url=https://media1.tenor.com/m/x8v1oNUOmg4AAAAd/rickroll-roll.gif">
-  </head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jerry's Portfolio</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Courier New', monospace;
+      background-color: #1e1e1e;
+      color: #f0f0f0;
+      height: 100%;
+      overflow: hidden;
+    }
+    #terminal {
+      padding: 10px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .output {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      margin-bottom: 10px;
+    }
+    input {
+      background: #1e1e1e;
+      border: none;
+      color: #f0f0f0;
+      font-size: 16px;
+      width: 100%;
+      outline: none;
+      border-top: 1px solid #444;
+      padding: 10px;
+      font-family: 'Courier New', monospace;
+    }
+    input:focus {
+      border-top: 1px solid #888;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="terminal">
+    <div id="output" class="output"></div>
+    <input type="text" id="input" placeholder="Type a command..." autofocus />
+  </div>
+
+  <script>
+    const terminal = {
+      history: [],
+      historyIndex: -1,
+      commands: {},
+
+      output(text) {
+        const outputDiv = document.getElementById('output');
+        outputDiv.innerHTML += `<div>${text}</div>`;
+        outputDiv.scrollTop = outputDiv.scrollHeight;
+      },
+
+      registerCommand(name, callback) {
+        this.commands[name] = callback;
+      },
+
+      executeCommand(command) {
+        const [cmd, ...args] = command.split(' ');
+        if (this.commands[cmd]) {
+          this.commands[cmd](...args);
+        } else {
+          this.output(`command not found: ${cmd}`);
+        }
+      },
+
+      handleInput(event) {
+        const inputElement = event.target;
+        const command = inputElement.value.trim();
+
+        if (command) {
+          this.output(`$ ${command}`);
+
+          this.executeCommand(command);
+
+          this.history.push(command);
+          this.historyIndex = this.history.length;
+          inputElement.value = '';
+        }
+      },
+
+      handleArrowKeys(event) {
+        const inputElement = document.getElementById('input');
+        if (event.key === 'ArrowUp') {
+          if (this.historyIndex > 0) {
+            this.historyIndex--;
+            inputElement.value = this.history[this.historyIndex];
+          }
+        } else if (event.key === 'ArrowDown') {
+          if (this.historyIndex < this.history.length - 1) {
+            this.historyIndex++;
+            inputElement.value = this.history[this.historyIndex];
+          } else {
+            this.historyIndex = this.history.length;
+            inputElement.value = '';
+          }
+        }
+      },
+
+      start() {
+        const inputElement = document.getElementById('input');
+        inputElement.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter') {
+            this.handleInput(event);
+          } else {
+            this.handleArrowKeys(event);
+          }
+        });
+      }
+    };
+
+    terminal.registerCommand('help', () => {
+      terminal.output(`
+Available Commands:
+  help           - show this help message
+  lsb-release    - Learn more about me
+  ls             - List files and folders
+  sherlock       - Get contact info
+  clear          - Clear the terminal
+`);
+    });
+
+    terminal.registerCommand('lsb-release', () => {
+      terminal.output("Name:Jerryslang 'Jerry'\nAge:15\nOS:GNU/Linux\nDistro:Fedora 41\nWM:Sway\nWebsite:here\nOld-Usernames:Noface,VHK");
+    });
+
+    terminal.registerCommand('ls', () => {
+      terminal.output('Dotfiles // https://github.com/Jerryslang/dotfiles\nDiscord-RAT // https://github.com/Jerryslang/Discord-RAT\nWebsite // https://github.com/Jerryslang/jerryslang.github.io');
+    });
+
+    terminal.registerCommand('sherlock', () => {
+      terminal.output('Found Discord Account: https://discord.com/users/1341392030214914103\nFound Github Account: https://github.com/Jerryslang/\nFound Youtube Account: https://www.youtube.com/@jerryslang\nFound Spotify Account: https://open.spotify.com/user/31e2hefiinat4lc3krbjzs3prity');
+    });
+
+    terminal.registerCommand('clear', () => {
+      document.getElementById('output').innerHTML = '';
+    });
+
+    terminal.start();
+    terminal.executeCommand('help');
+  </script>
+
+</body>
 </html>
