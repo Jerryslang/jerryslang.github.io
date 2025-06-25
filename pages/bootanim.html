@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Scary hecker console</title>
+<style>
+  body {
+    background-color: black;
+    color: white;
+    font-family: monospace, monospace;
+    margin: 0;
+    padding: 10px;
+    overflow: hidden;
+  }
+  #log {
+    white-space: pre-wrap;
+    height: 100vh;
+    overflow-y: auto;
+    padding-right: 10px;
+    box-sizing: border-box;
+  }
+</style>
+</head>
+<body>
+<div id="log"></div>
+
+<script>
+  const logDiv = document.getElementById('log');
+  let lines = [];
+  let currentLine = 0;
+
+  function generatePersonalizedBootLog() {
+    const ua = navigator.userAgent;
+    const platform = navigator.platform;
+    const cores = navigator.hardwareConcurrency || 'unknown';
+    const screenRes = `${window.screen.width}x${window.screen.height}`;
+    const lang = navigator.language || 'unknown';
+
+    return `[    0.000000] Booting Homepage
+[    0.000001] User Agent: ${ua}
+[    0.000002] Platform: ${platform}
+[    0.000003] CPU Cores: ${cores}
+[    0.000004] Screen Resolution: ${screenRes}
+[    0.000005] Language: ${lang}
+[    0.000006] Starting system initialization...
+`;
+  }
+
+  const fakeBootLog = `
+[    0.010000] Linux version 5.15.0-50-generic (build@V8) (gcc version 11.2.0) #55-V8 SMP Fri Sep 23 10:45:32 UTC 2022
+[    0.015000] Command line: BOOT_IMAGE=/dev/urandom
+[    0.020000] Kernel panic probably imminent
+[    0.025000] Memory: 16384MB total, 14500MB free
+[    0.030000] CPU: Intel(R) Core(TM) i7-10700 CPU @ 2.90GHz (8 cores)
+[    0.035000] ACPI: Early table checksum verification succeeded
+[    0.040000] pci 0000:00:1f.2: PCI bridge to [bus 01]
+[    0.045000] Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
+[    0.050000] usb 1-1: new high-speed USB device number 2 using xhci_hcd
+[    0.055000] ata1: SATA link up 6.0 Gbps (SStatus 133 SControl 300)
+[    0.060000] EXT4-fs (sda1): mounted filesystem with ordered data mode
+[    0.065000] V8 Engine[1]: Starting Network Service...
+[    0.070000] V8 Engine[1]: Started Network Service.
+[    0.075000] V8 Engine[1]: Starting User Manager for UID 1000...
+[    0.080000] V8 Engine[1]: Started User Manager for UID 1000.
+[    0.085000] IPv6: ADDRCONF(NETDEV_UP): eth0: link is not ready
+[    0.090000] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+[    0.095000] eth0: Link is Up - 1Gbps/Full - flow control rx/tx
+[    0.100000] Bluetooth: Core ver 2.22
+[    0.105000] Bluetooth: HCI device and connection manager initialized
+[    0.110000] Bluetooth: HCI socket layer initialized
+[    0.115000] Bluetooth: L2CAP socket layer initialized
+[    0.120000] Bluetooth: SCO socket layer initialized
+[    0.125000] V8 Engine[1]: Reached target Multi-User System.
+[    0.130000] V8 Engine[1]: Starting OpenSSH Daemon...
+[    0.135000] V8 Engine[1]: Started OpenSSH Daemon.
+[    0.140000] V8 Engine[1]: Reached target Network.
+
+[    0.145000] eFuse: Reading OTP memory...
+[    0.150000] eFuse: Device ID: 0xA3F59B7C
+[    0.155000] eFuse: Security config: 0x1F3E7D2A
+
+[    INFO    ] eFuse: OTP Memory Readout:
+[    INFO    ] eFuse: OTP Memory Encoding: hexadecimal
+
+[   GITHUB   ] eFuse: 0000: 68 74 74 70 73 3A 2F 2F 67 69 74 68 75 62 2E 63 6F 6D 2F 4A 65 72 72 79 73 6C 61 6E 67
+[   DISCORD  ] eFuse: 0001: 6A 65 72 72 79 73 6C 61 6E 67 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+[    EMAIL   ] eFuse: 0002: 31 6E 6F 66 61 63 65 2D 69 6E 62 6F 78 40 70 72 6F 74 6F 6E 2E 6D 65 00 00 00 00 00 00
+
+[  CRITICAL  ]  ERROR: Couldnt init homepage.html
+[  CRITICAL  ]  Exception Occured: Noface too lazy to make a homepage ):
+
+`;
+
+  function scrollLog() {
+    if (currentLine < lines.length) {
+      logDiv.textContent += lines[currentLine] + '\n';
+      currentLine++;
+      logDiv.scrollTop = logDiv.scrollHeight;
+      setTimeout(scrollLog, 10); // scroll speed (ms)
+    }
+  }
+
+  // Combine personalized header + fake log, split into lines
+  lines = (generatePersonalizedBootLog() + fakeBootLog).trim().split('\n');
+  scrollLog();
+</script>
+</body>
+</html>
