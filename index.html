@@ -2,87 +2,113 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Jerry's Portfolio</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm/css/xterm.css" />
+  <title>GNU GRUB</title>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.11.0/brython.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.11.0/brython_stdlib.js"></script>
   <style>
     html, body {
-      height: 100%;
       margin: 0;
-      background: #1e1e1e;
+      padding: 0;
+      background: #1c1c1c;
+      color: #ccc;
+      font-family: monospace;
+      font-size: 16px;
+      height: 100vh;
+      overflow: hidden;
     }
-    #terminal-container {
-      height: 100%;
+
+    .grub-container {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 10px 20px;
+    }
+
+    .grub-header {
+      color: #999;
+      margin-bottom: 1em;
+    }
+
+    ul.grub-menu {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    ul.grub-menu li {
+      padding: 4px 2px;
+      white-space: pre;
+    }
+
+    ul.grub-menu li.selected {
+      background: #000080; /* GRUB blue */
+      color: #ffffff;
+    }
+
+    .grub-footer {
+      color: #999;
+      font-size: 0.9em;
+      margin-top: 2em;
     }
   </style>
 </head>
-<body>
+<body onload="brython()">
 
-  <div id="terminal-container"></div>
+  <div class="grub-container" tabindex="0">
+    <div class="grub-header">GNU GRUB  version 2.06</div>
+    <ul class="grub-menu" id="menu-options">
+      <li class="selected">* Homepage</li>
+      <li>  Advanced options for Homepage</li>
+    </ul>
+    <div class="grub-footer">
+      Use the ↑ and ↓ keys to select which entry is highlighted.<br>
+      Press enter to boot the selected OS, 'e' to edit the commands before booting or 'c' for a command-line.
+    </div>
+  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/xterm/lib/xterm.js"></script>
+  <!-- Brython Script -->
+  <script type="text/python">
+from browser import window, console
+
+def on_boot_selected(option):
+    console.log(f"Boot selected (from Python): {option}")
+    if option == 'Advanced options for Homepage':
+        window.alert('there is a secret hiding somewhere, its just not here (good luck)')
+    if option == '* Homepage':
+        window.location.href = './pages/bootanim.html'
+
+# expose
+window.on_boot_selected = on_boot_selected
+  </script>
+
+  <!-- JavaScript Menu Logic -->
   <script>
-    const term = new Terminal({
-      theme: {
-        background: '#1e1e1e',
-        foreground: '#f0f0f0'
-      },
-      fontFamily: 'Courier New, monospace',
-      fontSize: 16,
-      cursorBlink: true
-    });
-    term.open(document.getElementById('terminal-container'));
+    const menu = document.getElementById('menu-options');
+    const entries = Array.from(menu.querySelectorAll('li'));
+    let index = 0;
 
-    const COMMANDS = {
-      help: () => `
-Available Commands:
-  help           - show this help message
-  lsb-release    - Learn more about me
-  ls             - List files and folders
-  sherlock       - Get contact info
-  clear          - Clear the terminal
-`,
-      'lsb-release': () => `Name:Jerryslang 'Jerry'\nAge:15\nOS:GNU/Linux\nDistro:Fedora 41\nWM:Sway\nWebsite:here\nOld-Usernames:Noface,VHK`,
-      ls: () => `Dotfiles // https://github.com/Jerryslang/dotfiles
-Discord-RAT // https://github.com/Jerryslang/Discord-RAT
-jrpcPy // https://github.com/Jerryslang/jrpcPy
-Website // https://github.com/Jerryslang/jerryslang.github.io`,
-      sherlock: () => `Found Discord Account: https://discord.com/users/1341392030214914103
-Found Github Account: https://github.com/Jerryslang/
-Found Youtube Account: https://www.youtube.com/@jerryslang
-Found Spotify Account: https://open.spotify.com/user/31e2hefiinat4lc3krbjzs3prity`,
-      clear: () => {
-        term.clear();
-        return '';
-      }
-    };
+    function update() {
+      entries.forEach((el, i) => {
+        el.classList.toggle('selected', i === index);
+      });
+    }
 
-    term.writeln('Welcome to Jerry\'s Terminal Portfolio');
-    term.writeln('Type "help" to get started.\n');
-    term.write('$ ');
+    document.querySelector('.grub-container').focus();
 
-    let command = '';
-    term.onKey(({ key, domEvent }) => {
-      const code = domEvent.key;
-
-      if (code === 'Enter') {
-        term.write('\n');
-        if (COMMANDS[command.trim()]) {
-          const output = COMMANDS[command.trim()]();
-          if (output) term.writeln(output);
-        } else if (command.trim()) {
-          term.writeln(`command not found: ${command}`);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') {
+        index = (index + 1) % entries.length;
+        update();
+        e.preventDefault();
+      } else if (e.key === 'ArrowUp') {
+        index = (index - 1 + entries.length) % entries.length;
+        update();
+        e.preventDefault();
+      } else if (e.key === 'Enter') {
+        const selected = entries[index].textContent.trim();
+        if (window.on_boot_selected) {
+          window.on_boot_selected(selected);
+        } else {
+          alert("Brython function not found");
         }
-        term.write('\n$ ');
-        command = '';
-      } else if (code === 'Backspace') {
-        if (command.length > 0) {
-          term.write('\b \b');
-          command = command.slice(0, -1);
-        }
-      } else if (code.length === 1) {
-        term.write(key);
-        command += key;
       }
     });
   </script>
