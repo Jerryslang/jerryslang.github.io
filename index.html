@@ -2,116 +2,93 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>GNU GRUB</title>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.11.0/brython.min.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.11.0/brython_stdlib.js"></script>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: #1c1c1c;
-      color: #ccc;
-      font-family: monospace;
-      font-size: 16px;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    .grub-container {
-      max-width: 800px;
-      margin: 50px auto;
-      padding: 10px 20px;
-    }
-
-    .grub-header {
-      color: #999;
-      margin-bottom: 1em;
-    }
-
-    ul.grub-menu {
-      list-style: none;
-      padding-left: 0;
-    }
-
-    ul.grub-menu li {
-      padding: 4px 2px;
-      white-space: pre;
-    }
-
-    ul.grub-menu li.selected {
-      background: #000080; /* GRUB blue */
-      color: #ffffff;
-    }
-
-    .grub-footer {
-      color: #999;
-      font-size: 0.9em;
-      margin-top: 2em;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>jerryslang Portfolio</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
-<body onload="brython()">
+<body>
+  <header>
+    <div class="profile">
+      <img src="https://avatars.githubusercontent.com/u/166717111?v=4" alt="jerryslang Avatar" />
+      <div>
+        <h1>jerryslang</h1>
+        <p>Linux (btw)</p>
 
-  <div class="grub-container" tabindex="0">
-    <div class="grub-header">GNU GRUB  version 2.06</div>
-    <ul class="grub-menu" id="menu-options">
-      <li class="selected">* Homepage</li>
-      <li>  Advanced options for Homepage</li>
-    </ul>
-    <div class="grub-footer">
-      Use the ↑ and ↓ keys to select which entry is highlighted.<br>
-      Press enter to boot the selected OS, 'e' to edit the commands before booting or 'c' for a command-line.
+        <!-- Category buttons container -->
+        <div id="category-filters"></div>
+      </div>
     </div>
-  </div>
+  </header>
 
-  <!-- Brython Script -->
-  <script type="text/python">
-from browser import window, console
+  <main class="container">
+    <div class="repo-list"></div>
+  </main>
 
-def on_boot_selected(option):
-    console.log(f"Boot selected (from Python): {option}")
-    if option == 'Advanced options for Homepage':
-        window.alert('there is a secret hiding somewhere, its just not here (good luck)')
-    if option == '* Homepage':
-        window.location.href = './pages/bootanim.html'
-
-# expose
-window.on_boot_selected = on_boot_selected
-  </script>
-
-  <!-- JavaScript Menu Logic -->
   <script>
-    const menu = document.getElementById('menu-options');
-    const entries = Array.from(menu.querySelectorAll('li'));
-    let index = 0;
+    const projects = [];
+    let categories = [];
+    let activeCategory = null;
 
-    function update() {
-      entries.forEach((el, i) => {
-        el.classList.toggle('selected', i === index);
+    function setCategories(catArray) {
+      categories = catArray;
+      activeCategory = categories.length ? categories[0] : null;
+      renderCategoryButtons();
+      renderProjects(activeCategory);
+    }
+
+    function addProject({ name, url, description, language, category }, urlParams = {}) {
+      let fullUrl = url;
+      const paramKeys = Object.keys(urlParams);
+      if (paramKeys.length > 0) {
+        const queryString = paramKeys
+          .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(urlParams[key])}`)
+          .join('&');
+        fullUrl += (url.includes('?') ? '&' : '?') + queryString;
+      }
+      projects.push({ name, url: fullUrl, description, language, category });
+      if (category === activeCategory) {
+        renderProjects(activeCategory);
+      }
+    }
+
+    function renderCategoryButtons() {
+      const container = document.getElementById('category-filters');
+      container.innerHTML = '';
+
+      categories.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.textContent = cat;
+        btn.classList.toggle('active', cat === activeCategory);
+        btn.style.cursor = 'pointer';
+
+        btn.onclick = () => {
+          activeCategory = cat;
+          [...container.children].forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          renderProjects(cat);
+        };
+
+        container.appendChild(btn);
       });
     }
 
-    document.querySelector('.grub-container').focus();
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowDown') {
-        index = (index + 1) % entries.length;
-        update();
-        e.preventDefault();
-      } else if (e.key === 'ArrowUp') {
-        index = (index - 1 + entries.length) % entries.length;
-        update();
-        e.preventDefault();
-      } else if (e.key === 'Enter') {
-        const selected = entries[index].textContent.trim();
-        if (window.on_boot_selected) {
-          window.on_boot_selected(selected);
-        } else {
-          alert("Brython function not found");
-        }
-      }
-    });
+    function renderProjects(category) {
+      const repoList = document.querySelector('.repo-list');
+      repoList.innerHTML = '';
+      const filtered = projects.filter(p => p.category === category);
+      filtered.forEach(p => {
+        const repoDiv = document.createElement('div');
+        repoDiv.className = 'repo';
+        repoDiv.innerHTML = `
+          <a href="${p.url}" target="_blank" rel="noopener noreferrer">${p.name}</a>
+          <p>${p.description || 'No description'}</p>
+          <div class="meta">${p.language ? `<span>${p.language}</span>` : ''}</div>
+        `;
+        repoList.appendChild(repoDiv);
+      });
+    }
   </script>
 
+  <script src="projects.js"></script>
 </body>
 </html>
