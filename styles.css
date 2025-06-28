@@ -1,0 +1,237 @@
+/* === Base Styles === */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background-color: #0d1117;
+  color: #c9d1d9;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+}
+
+a {
+  color: #58a6ff;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* === Header/Profile === */
+header {
+  background: #161b22;
+  padding: 2rem;
+  box-shadow: 0 1px 4px rgba(88, 166, 255, 0.1);
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile img {
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  border: 2px solid #30363d;
+}
+
+/* === Main content === */
+main.container {
+  /* Remove max-width and margin to allow full width */
+  padding: 1rem 2rem;
+  background: #161b22;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(88, 166, 255, 0.15);
+}
+
+
+h1, h2 {
+  color: #58a6ff;
+  margin-top: 0;
+}
+
+h2 {
+  margin-bottom: 1rem;
+}
+
+.repo-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.repo {
+  background: #21262d;
+  padding: 1rem;
+  border-radius: 6px;
+  border: 1px solid #30363d;
+  transition: box-shadow 0.2s;
+  color: #c9d1d9;
+}
+
+.repo:hover {
+  box-shadow: 0 0 8px #58a6ff;
+}
+
+.repo a {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.repo p {
+  margin: 0.5rem 0;
+  color: #8b949e;
+}
+
+.repo .meta {
+  font-size: 0.85rem;
+  color: #8b949e;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* === Files list === */
+ul#fileList {
+  list-style: none;
+  padding-left: 0;
+}
+
+ul#fileList li {
+  padding: 0.25rem 0;
+  border-bottom: 1px solid #30363d;
+  font-family: monospace;
+  color: #8b949e;
+}
+
+/* === README container === */
+#readme {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  padding: 1.5rem 2rem;
+  border-radius: 8px;
+  max-width: 900px;
+  margin-top: 1rem;
+  color: #c9d1d9;
+  overflow-wrap: break-word;
+  box-shadow: 0 0 15px rgba(88, 166, 255, 0.15);
+}
+
+/* === Markdown styling tweaks for code blocks, links etc === */
+#readme h1,
+#readme h2,
+#readme h3,
+#readme h4,
+#readme h5,
+#readme h6 {
+  color: #58a6ff;
+}
+
+#readme p {
+  color: #c9d1d9;
+}
+
+#readme code {
+  background: #21262d;
+  padding: 0.2em 0.4em;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 0.95em;
+  color: #f0f6fc;
+}
+
+#readme pre {
+  background: #21262d;
+  padding: 1em;
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: monospace;
+  font-size: 0.9em;
+  color: #f0f6fc;
+  margin: 1rem 0;
+}
+
+#readme a {
+  color: #58a6ff;
+  text-decoration: underline;
+}
+
+#readme blockquote {
+  border-left: 4px solid #30363d;
+  padding-left: 1rem;
+  color: #8b949e;
+  font-style: italic;
+  margin: 1rem 0;
+}
+
+/* === Back link === */
+a[style*="display:inline-block"] {
+  color: #58a6ff;
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+
+/* Folder styles */
+.folder {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding-left: 1.2em;
+}
+
+.folder::before {
+  content: "▶";
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 0.8em;
+  transition: transform 0.2s ease;
+}
+
+.folder[aria-expanded="true"]::before,
+.folder[aria-expanded="true"]::before {
+  transform: rotate(90deg);
+}
+
+/* Category filter buttons container */
+#category-filters {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Individual category buttons */
+#category-filters button {
+  background-color: #21262d;
+  border: 1px solid #30363d;
+  color: #58a6ff;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  user-select: none;
+}
+
+#category-filters button:hover {
+  background-color: #58a6ff;
+  color: #0d1117;
+}
+
+#category-filters button:focus {
+  outline: none;
+  box-shadow: 0 0 5px #58a6ff;
+}
+
+/* Active category button style */
+#category-filters button.active,
+#category-filters button[style*="font-weight: bold"] {
+  background-color: #58a6ff;
+  color: #0d1117;
+  font-weight: bold;
+}
